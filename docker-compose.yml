@@ -20,18 +20,21 @@ services:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
-      - "81:81"
+      - "80:80"
     depends_on:
       - db
 
   web:
     build: .
     container_name: django
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn django_docker.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    env_file:
+      - .env
     volumes:
       - .:/code
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
+    restart: always
     environment:
       - POSTGRES_USER=usuario
       - POSTGRES_PASSWORD=mi_contrasena
