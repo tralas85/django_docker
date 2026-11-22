@@ -16,7 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.http import JsonResponse
+
+def health_check(request):
+    try:
+        connection.ensure_connection()
+        return JsonResponse({"status": "ok", "db": "connected"}, status=200)
+    except Exception:
+        return JsonResponse({"status": "error"}, status=503)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('health/', health_check, name='health_check'),
 ]
